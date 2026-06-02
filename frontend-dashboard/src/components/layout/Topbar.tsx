@@ -7,9 +7,6 @@ export const Topbar: React.FC = () => (
   <header className="topbar">
     <div className="system-health">
       <div className="pulse-indicator healthy" />
-      <span className="health-text">
-        Systems Operational · Redis ✓ · PostgreSQL ✓ · Edge Node ✓
-      </span>
     </div>
     <div className="user-controls">
       <button className="icon-btn" id="btn-refresh" title="Refresh data" aria-label="Refresh data">

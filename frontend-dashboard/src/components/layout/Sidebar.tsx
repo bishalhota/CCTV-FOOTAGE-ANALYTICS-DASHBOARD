@@ -81,7 +81,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <div className="sidebar-footer">
       <div className="sidebar-badge">
         <div className="pulse-indicator healthy" />
-        Pipeline Active — 2 FPS · Sequential
+        Pipeline Active
       </div>
     </div>
   </aside>

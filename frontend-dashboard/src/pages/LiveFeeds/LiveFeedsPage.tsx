@@ -22,10 +22,7 @@ const LiveFeedsPage: React.FC<LiveFeedsPageProps> = ({ store }) => {
   return (
     <div className="page-fade-in" id="live-feeds-page">
       <PageHeader
-        title={`Edge Processing — ${store.name}`}
-        subtitle={`Sequential video processing · YOLOv8n + ByteTrack at 2 FPS · ${completedCameras}/${cameras.length} cameras complete${
-          processingCamera ? ` · Currently: ${processingCamera[0].toUpperCase()}` : ''
-        }`}
+        title="Store Cam processing"
       />
 
       <div className="feeds-grid">
