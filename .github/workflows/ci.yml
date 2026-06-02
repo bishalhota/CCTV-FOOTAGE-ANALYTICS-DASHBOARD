@@ -47,5 +47,5 @@ jobs:
       run: |
         touch .env
         touch .env.hybrid
-        docker-compose -f docker-compose.yml config
-        docker-compose -f docker-compose.workers.yml config
+        docker compose -f docker-compose.yml config
+        docker compose -f docker-compose.workers.yml config
