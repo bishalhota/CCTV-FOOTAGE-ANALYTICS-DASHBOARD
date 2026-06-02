@@ -13,6 +13,7 @@
 .env.production
 .env.staging
 .env.development
+.env.hybrid
 
 # =============================================================================
 # PROJECT-SPECIFIC — LARGE/SENSITIVE FILES

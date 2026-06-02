@@ -59,18 +59,24 @@ class EventPublisher:
 
 async def main():
     logger.info("Event Engine is starting...")
-    
+
     redis_uri = os.getenv("REDIS_URI", "redis://redis:6379/0")
-    db_user = os.getenv("POSTGRES_USER", "postgres")
-    db_pass = os.getenv("POSTGRES_PASSWORD", "postgres")
-    db_host = os.getenv("POSTGRES_SERVER", "postgres")
-    db_name = os.getenv("POSTGRES_DB", "store_intelligence")
-    
-    db_url = f"postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:5432/{db_name}"
-    
+
+    # SQLALCHEMY_DATABASE_URI can be set directly (e.g. Neon cloud with ?ssl=require).
+    # Falls back to assembling from individual POSTGRES_* components for local Docker.
+    db_url = os.getenv("SQLALCHEMY_DATABASE_URI")
+    if not db_url:
+        db_user = os.getenv("POSTGRES_USER", "postgres")
+        db_pass = os.getenv("POSTGRES_PASSWORD", "postgres")
+        db_host = os.getenv("POSTGRES_SERVER", "postgres")
+        db_name = os.getenv("POSTGRES_DB", "store_intelligence")
+        db_url = f"postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:5432/{db_name}"
+
+    logger.info(f"Connecting to database at host: {db_url.split('@')[-1].split('/')[0] if '@' in db_url else 'configured'}")
+
     engine = create_async_engine(db_url, echo=False)
     async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-    
+
     r = redis.from_url(redis_uri)
     
     publisher = EventPublisher(async_session, r)
