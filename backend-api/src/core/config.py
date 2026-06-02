@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     # Security / CORS
     # Principal Note: We use List[str] instead of List[AnyHttpUrl] because Pydantic V2's
     # AnyHttpUrl serializes to a Url object that breaks string comparison in CORSMiddleware.
-    BACKEND_CORS_ORIGINS: List[str] = []
+    BACKEND_CORS_ORIGINS: Union[str, List[str]] = []
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
