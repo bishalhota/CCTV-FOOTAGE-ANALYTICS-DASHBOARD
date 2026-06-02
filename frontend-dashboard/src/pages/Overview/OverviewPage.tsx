@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageHeader } from '../../components/layout';
-import { MetricCard, FunnelChart, SessionSummary } from '../../components/dashboard';
+import { MetricCard, FunnelChart, SessionSummary, FootfallAndExitsChart, ProductEngagementChart } from '../../components/dashboard';
 import { useApiData } from '../../hooks';
 import { formatCurrency } from '../../utils';
 import { API_BASE } from '../../constants';
@@ -78,6 +78,11 @@ const OverviewPage: React.FC<OverviewPageProps> = ({ storeId, storeName }) => {
           value={loading ? '—' : formatCurrency(metrics?.averageBasketValue ?? 0)}
           loading={loading}
         />
+      </div>
+
+      <div className="charts-row">
+        <FootfallAndExitsChart />
+        <ProductEngagementChart />
       </div>
 
       <div className="charts-row">

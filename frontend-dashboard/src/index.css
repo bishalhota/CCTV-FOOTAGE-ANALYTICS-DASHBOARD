@@ -960,3 +960,31 @@ body {
   background: linear-gradient(90deg, var(--color-warning), #f97316);
   opacity: 1;
 }
+
+/* ==========================================
+   Recharts Custom Tooltips & Charts
+   ========================================== */
+.custom-recharts-tooltip {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border-color: rgba(99, 102, 241, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.custom-recharts-tooltip .tooltip-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* Recharts overrides to remove focus outlines */
+.recharts-wrapper {
+  outline: none;
+}
+.recharts-surface {
+  outline: none;
+}
+
