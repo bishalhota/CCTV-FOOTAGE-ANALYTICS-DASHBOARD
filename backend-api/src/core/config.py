@@ -54,14 +54,32 @@ class Settings(BaseSettings):
     def assemble_db_connection(cls, v: str | None, info: ValidationInfo) -> Any:
         """Constructs the asyncpg database URI from individual components."""
         if isinstance(v, str):
-            # Render/Neon often provides postgresql:// URIs and sslmode=require, 
-            # but we require the asyncpg driver and ssl=require.
+            # Render/Neon often provides postgresql:// URIs with unsupported kwargs 
+            # like sslmode=require or channel_binding=disable. asyncpg strictly expects ssl=require.
+            import urllib.parse
+            
             uri = v
             if uri.startswith("postgresql://"):
                 uri = uri.replace("postgresql://", "postgresql+asyncpg://", 1)
-            if "sslmode=" in uri:
-                uri = uri.replace("sslmode=", "ssl=")
-            return uri
+                
+            # Parse the URL and clean up query parameters
+            parsed = urllib.parse.urlparse(uri)
+            query_params = urllib.parse.parse_qs(parsed.query)
+            
+            # Keep only 'ssl' or convert 'sslmode' to 'ssl'. Drop everything else (like channel_binding).
+            new_query = {}
+            if 'sslmode' in query_params or 'ssl' in query_params:
+                new_query['ssl'] = 'require'
+                
+            new_query_string = urllib.parse.urlencode(new_query)
+            
+            # Reconstruct the URL
+            clean_uri = urllib.parse.urlunparse((
+                parsed.scheme, parsed.netloc, parsed.path, 
+                parsed.params, new_query_string, parsed.fragment
+            ))
+            
+            return clean_uri
         
         values = info.data
         user = values.get("POSTGRES_USER")

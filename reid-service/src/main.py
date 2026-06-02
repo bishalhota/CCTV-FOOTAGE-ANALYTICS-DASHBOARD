@@ -18,7 +18,6 @@ async def main():
     redis_uri = os.getenv("REDIS_URI", "redis://redis:6379/0")
 
     # SQLALCHEMY_DATABASE_URI can be set directly (e.g. Neon cloud with ?ssl=require).
-    # Falls back to assembling from individual POSTGRES_* components for local Docker.
     db_url = os.getenv("SQLALCHEMY_DATABASE_URI")
     if not db_url:
         db_user = os.getenv("POSTGRES_USER", "postgres")
@@ -26,6 +25,19 @@ async def main():
         db_host = os.getenv("POSTGRES_SERVER", "postgres")
         db_name = os.getenv("POSTGRES_DB", "store_intelligence")
         db_url = f"postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:5432/{db_name}"
+    else:
+        import urllib.parse
+        if db_url.startswith("postgresql://"):
+            db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        parsed = urllib.parse.urlparse(db_url)
+        query_params = urllib.parse.parse_qs(parsed.query)
+        new_query = {}
+        if 'sslmode' in query_params or 'ssl' in query_params:
+            new_query['ssl'] = 'require'
+        db_url = urllib.parse.urlunparse((
+            parsed.scheme, parsed.netloc, parsed.path, 
+            parsed.params, urllib.parse.urlencode(new_query), parsed.fragment
+        ))
 
     logger.info(f"Connecting to database at host: {db_url.split('@')[-1].split('/')[0] if '@' in db_url else 'configured'}")
 
