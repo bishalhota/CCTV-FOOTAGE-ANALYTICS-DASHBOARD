@@ -45,7 +45,7 @@ jobs:
 
     - name: Validate Docker Compose
       run: |
-        touch .env
+        echo "POSTGRES_PASSWORD=dummy_password" > .env
         touch .env.hybrid
         docker compose -f docker-compose.yml config
         docker compose -f docker-compose.workers.yml config
