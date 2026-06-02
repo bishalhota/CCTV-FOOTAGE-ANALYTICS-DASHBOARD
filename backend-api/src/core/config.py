@@ -54,6 +54,9 @@ class Settings(BaseSettings):
     def assemble_db_connection(cls, v: str | None, info: ValidationInfo) -> Any:
         """Constructs the asyncpg database URI from individual components."""
         if isinstance(v, str):
+            # Render/Neon often provides postgresql:// URIs, but we require the asyncpg driver.
+            if v.startswith("postgresql://"):
+                return v.replace("postgresql://", "postgresql+asyncpg://", 1)
             return v
         
         values = info.data
