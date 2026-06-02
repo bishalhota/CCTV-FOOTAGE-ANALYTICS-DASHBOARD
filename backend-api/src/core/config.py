@@ -54,10 +54,14 @@ class Settings(BaseSettings):
     def assemble_db_connection(cls, v: str | None, info: ValidationInfo) -> Any:
         """Constructs the asyncpg database URI from individual components."""
         if isinstance(v, str):
-            # Render/Neon often provides postgresql:// URIs, but we require the asyncpg driver.
-            if v.startswith("postgresql://"):
-                return v.replace("postgresql://", "postgresql+asyncpg://", 1)
-            return v
+            # Render/Neon often provides postgresql:// URIs and sslmode=require, 
+            # but we require the asyncpg driver and ssl=require.
+            uri = v
+            if uri.startswith("postgresql://"):
+                uri = uri.replace("postgresql://", "postgresql+asyncpg://", 1)
+            if "sslmode=" in uri:
+                uri = uri.replace("sslmode=", "ssl=")
+            return uri
         
         values = info.data
         user = values.get("POSTGRES_USER")
