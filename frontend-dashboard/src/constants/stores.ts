@@ -7,4 +7,10 @@ export const STORES: Store[] = [
     cameras: 5,
     location: 'Bangalore, India',
   },
+  {
+    id: 'a1b2c3d4-0002-4000-8000-000000000002',
+    name: 'Store 2',
+    cameras: 4,
+    location: 'Local',
+  },
 ];

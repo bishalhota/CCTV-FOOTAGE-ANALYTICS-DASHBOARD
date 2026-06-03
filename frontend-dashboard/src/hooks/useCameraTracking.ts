@@ -23,19 +23,29 @@ interface UseCameraTrackingResult {
  */
 export function useCameraTracking(
   totalCameras: number,
-  cameraStatuses: Record<string, CameraStatus>
+  cameraStatuses: Record<string, CameraStatus>,
+  storeId?: string
 ): UseCameraTrackingResult {
-  const cameras: Camera[] = useMemo(
-    () =>
-      [
-        { key: 'cam-1', name: 'Entrance Left',   fps: 2 },
-        { key: 'cam-2', name: 'Entrance Right',  fps: 2 },
-        { key: 'cam-3', name: 'Outside Area',    fps: 2 },
-        { key: 'cam-4', name: 'Storage Room',    fps: 2 },
-        { key: 'cam-5', name: 'Billing Counter', fps: 2 },
-      ].slice(0, totalCameras),
-    [totalCameras]
-  );
+  const cameras: Camera[] = useMemo(() => {
+    // Dynamically set camera names based on Store ID
+    if (storeId === 'a1b2c3d4-0002-4000-8000-000000000002') {
+      return [
+        { key: 'cam-1', name: 'Entry 1', fps: 2 },
+        { key: 'cam-2', name: 'Entry 2', fps: 2 },
+        { key: 'cam-3', name: 'Zone Area', fps: 2 },
+        { key: 'cam-4', name: 'Billing Area', fps: 2 },
+      ].slice(0, totalCameras);
+    }
+    
+    // Default / Store 1
+    return [
+      { key: 'cam-1', name: 'Entrance Left',   fps: 2 },
+      { key: 'cam-2', name: 'Entrance Right',  fps: 2 },
+      { key: 'cam-3', name: 'Outside Area',    fps: 2 },
+      { key: 'cam-4', name: 'Storage Room',    fps: 2 },
+      { key: 'cam-5', name: 'Billing Counter', fps: 2 },
+    ].slice(0, totalCameras);
+  }, [totalCameras, storeId]);
 
   const completedCameras = useMemo(
     () => Object.values(cameraStatuses).filter((s) => s.status === 'COMPLETE').length,

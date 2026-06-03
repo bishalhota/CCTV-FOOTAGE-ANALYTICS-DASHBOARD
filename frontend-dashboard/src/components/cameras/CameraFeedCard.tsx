@@ -80,12 +80,39 @@ export const CameraFeedCard: React.FC<CameraFeedCardProps> = ({
           {camKey.toUpperCase()}
         </div>
 
+        {/* CCTV Timestamp */}
+        {cameraStatus.video_timestamp !== undefined && (
+          <div
+            style={{
+              zIndex: 10,
+              position: 'absolute',
+              top: 10,
+              right: 10,
+              background: 'rgba(0,0,0,0.6)',
+              padding: '2px 8px',
+              borderRadius: 4,
+              color: '#fff',
+              fontSize: '0.8rem',
+              fontWeight: 'bold',
+              fontFamily: 'monospace',
+              letterSpacing: '1px'
+            }}
+          >
+            {(() => {
+              const totalSeconds = Math.floor(cameraStatus.video_timestamp || 0);
+              const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+              const s = (totalSeconds % 60).toString().padStart(2, '0');
+              return `${m}:${s}`;
+            })()}
+          </div>
+        )}
+
         {/* Status badge */}
         <div
           style={{
             zIndex: 10,
             position: 'absolute',
-            top: 10,
+            top: cameraStatus.video_timestamp !== undefined ? 35 : 10,
             right: 10,
             background: 'rgba(0,0,0,0.7)',
             padding: '3px 8px',

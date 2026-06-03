@@ -16,7 +16,7 @@ WORKDIR /app
 # Install dependencies first (leverages Docker layer caching — only re-runs if
 # package.json changes, not on every source code change)
 COPY package*.json ./
-RUN npm ci --omit=dev=false
+RUN npm install
 
 # Copy source code
 COPY . .

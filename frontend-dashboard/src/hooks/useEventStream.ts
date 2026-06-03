@@ -59,6 +59,16 @@ export function useEventStream(storeId: string): UseEventStreamResult {
         ];
         return next;
       });
+
+      if (data.video_timestamp !== undefined) {
+        setCameraStatuses((prev) => ({
+          ...prev,
+          [camId]: {
+            ...(prev[camId] || { status: 'PROCESSING', progress: 0 }),
+            video_timestamp: data.video_timestamp,
+          },
+        }));
+      }
     });
 
     sse.addEventListener('domain_event', (e) => {
@@ -88,11 +98,24 @@ export function useEventStream(storeId: string): UseEventStreamResult {
         detail = `Visitor ${vid} left the Billing Counter`;
       }
 
+      let timeString = new Date().toLocaleTimeString();
+      if (data.metadata?.video_timestamp !== undefined) {
+        const totalSeconds = Math.floor(data.metadata.video_timestamp);
+        const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+        const s = (totalSeconds % 60).toString().padStart(2, '0');
+        timeString = `${m}:${s}`;
+      } else if (data.video_timestamp !== undefined) {
+        const totalSeconds = Math.floor(data.video_timestamp);
+        const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+        const s = (totalSeconds % 60).toString().padStart(2, '0');
+        timeString = `${m}:${s}`;
+      }
+
       const newEvent: LiveEvent = {
         id:         `${Date.now()}-${Math.random()}`,
         event_type: type,
         detail,
-        time:       new Date().toLocaleTimeString(),
+        time:       timeString,
       };
 
       setEvents((prev) => [newEvent, ...prev].slice(0, 30));
@@ -103,6 +126,7 @@ export function useEventStream(storeId: string): UseEventStreamResult {
       setCameraStatuses((prev) => ({
         ...prev,
         [data.camera_id]: {
+          ...prev[data.camera_id],
           status:   data.status as CameraStatus['status'],
           progress: parseFloat(data.progress) || 0,
         },

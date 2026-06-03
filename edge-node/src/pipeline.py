@@ -27,7 +27,8 @@ class TelemetryClient:
                 "frame_height": str(payload["frame_height"]),
                 "embedding": json.dumps(payload["embedding"]) if payload["embedding"] else "",
                 "quality_score": str(payload["quality_score"]),
-                "timestamp": str(payload["timestamp"])
+                "timestamp": str(payload["timestamp"]),
+                "video_timestamp": str(payload.get("video_timestamp", 0.0))
             }
             self.client.xadd(self.stream_name, redis_payload)
             logger.debug(f"Published telemetry for track_id {payload['track_id']}")
@@ -134,7 +135,8 @@ class VisionPipeline:
                     continue
                 
                 current_time = time.time()
-                self.process_frame(frame, current_time)
+                video_timestamp = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
+                self.process_frame(frame, current_time, video_timestamp)
                 processed_count += 1
                 
                 # Report progress every 50 processed frames
@@ -157,7 +159,7 @@ class VisionPipeline:
         self.telemetry_client.publish_status(self.store_id, self.camera_id, "COMPLETE", 100.0)
         return True
 
-    def process_frame(self, frame: np.ndarray, timestamp: float):
+    def process_frame(self, frame: np.ndarray, timestamp: float, video_timestamp: float = 0.0):
         # Run YOLO with built-in ByteTrack
         results = self.detector.track(frame, tracker="bytetrack.yaml", persist=True, classes=[0], verbose=False)
         
@@ -205,7 +207,8 @@ class VisionPipeline:
                 "frame_height": h,
                 "embedding": embedding.tolist() if embedding is not None else None,
                 "quality_score": quality_score,
-                "timestamp": timestamp
+                "timestamp": timestamp,
+                "video_timestamp": video_timestamp
             }
             
             self.telemetry_client.publish(telemetry_payload)

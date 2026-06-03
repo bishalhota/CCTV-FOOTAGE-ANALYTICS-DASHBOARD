@@ -6,7 +6,7 @@
 # Principal Note: We MUST use opencv-python-headless. Standard opencv-python
 # installs Qt and X11 UI dependencies which bloat the Docker image by ~300MB
 # and often crash headless edge servers.
-opencv-python-headless>=4.9.0
+opencv-python-headless>=4.9.0,<4.10.0
 
 # Detection (YOLOv8)
 # ultralytics bundles ByteTrack natively via its tracker plugin

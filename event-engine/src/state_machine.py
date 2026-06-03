@@ -87,6 +87,7 @@ class EventStateMachine:
         camera_id = telemetry.get("camera_id", "")
         bbox = telemetry["bbox"]
         current_time = telemetry["timestamp"]
+        video_timestamp = telemetry.get("video_timestamp", 0.0)
         frame_w = telemetry.get("frame_width", 1920) or 1920
         frame_h = telemetry.get("frame_height", 1080) or 1080
 
@@ -103,7 +104,7 @@ class EventStateMachine:
         # 1. ENTRY Detection
         if visitor_id not in self.visitors:
             self.visitors[visitor_id] = VisitorState(visitor_id)
-            self._emit_event(store_id, visitor_id, None, "ENTRY", current_time)
+            self._emit_event(store_id, visitor_id, None, "ENTRY", current_time, metadata={"video_timestamp": video_timestamp})
 
         state = self.visitors[visitor_id]
         state.last_seen_time = current_time
@@ -134,7 +135,7 @@ class EventStateMachine:
                 if state.current_zone_id:
                     old_zone = next((z for z in all_zones if z.zone_id == state.current_zone_id), None)
                     self._emit_event(store_id, visitor_id, state.current_zone_id, "ZONE_EXIT", current_time,
-                                     metadata={"zone_name": old_zone.zone_name if old_zone else ""})
+                                     metadata={"zone_name": old_zone.zone_name if old_zone else "", "video_timestamp": video_timestamp})
 
                 # Enter the new zone
                 state.current_zone_id = new_zone_id
@@ -144,10 +145,10 @@ class EventStateMachine:
                 # High-level Business Event Translation
                 if intersecting_zone.zone_type == "QUEUE":
                     self._emit_event(store_id, visitor_id, new_zone_id, "BILLING_QUEUE_JOIN", current_time,
-                                     metadata={"zone_name": intersecting_zone.zone_name})
+                                     metadata={"zone_name": intersecting_zone.zone_name, "video_timestamp": video_timestamp})
                 else:
                     self._emit_event(store_id, visitor_id, new_zone_id, "ZONE_ENTER", current_time,
-                                     metadata={"zone_name": intersecting_zone.zone_name})
+                                     metadata={"zone_name": intersecting_zone.zone_name, "video_timestamp": video_timestamp})
 
             else:
                 # --- VISITOR REMAINS IN ZONE ---
@@ -159,7 +160,8 @@ class EventStateMachine:
                             store_id, visitor_id, new_zone_id, "ZONE_DWELL", current_time,
                             metadata={
                                 "dwell_duration_seconds": dwell_duration,
-                                "zone_name": intersecting_zone.zone_name
+                                "zone_name": intersecting_zone.zone_name,
+                                "video_timestamp": video_timestamp
                             }
                         )
                         state.dwell_event_emitted = True
@@ -173,10 +175,10 @@ class EventStateMachine:
                     # They left the queue. We assume abandonment for V1.
                     # V2 logic would verify if they moved to a CHECKOUT_REGISTER zone immediately after.
                     self._emit_event(store_id, visitor_id, state.current_zone_id, "BILLING_QUEUE_ABANDON", current_time,
-                                     metadata={"zone_name": old_zone.zone_name if old_zone else ""})
+                                     metadata={"zone_name": old_zone.zone_name if old_zone else "", "video_timestamp": video_timestamp})
                 else:
                     self._emit_event(store_id, visitor_id, state.current_zone_id, "ZONE_EXIT", current_time,
-                                     metadata={"zone_name": old_zone.zone_name if old_zone else ""})
+                                     metadata={"zone_name": old_zone.zone_name if old_zone else "", "video_timestamp": video_timestamp})
 
                 state.current_zone_id = None
                 state.zone_entry_time = None

@@ -51,6 +51,9 @@ class EventPublisher:
                         timestamp=event_time,
                         metadata_payload=payload.get("metadata", {})
                     )
+                    # Add video_timestamp to metadata payload if available
+                    if "video_timestamp" in payload:
+                        db_event.metadata_payload["video_timestamp"] = payload["video_timestamp"]
                     session.add(db_event)
                     await session.commit()
                 self.queue.task_done()
@@ -146,7 +149,8 @@ async def main():
                             "bbox": json.loads(msg["bbox"]),
                             "frame_width": int(msg["frame_width"]) if "frame_width" in msg else 1920,
                             "frame_height": int(msg["frame_height"]) if "frame_height" in msg else 1080,
-                            "timestamp": float(msg["timestamp"])
+                            "timestamp": float(msg["timestamp"]),
+                            "video_timestamp": float(msg.get("video_timestamp", 0.0))
                         }
                         
                         state_machine.process_telemetry(telemetry)

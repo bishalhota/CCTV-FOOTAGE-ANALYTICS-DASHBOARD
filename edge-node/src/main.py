@@ -30,29 +30,29 @@ def main():
         
         logger.info(f"Sequential processing mode: {len(cameras)} cameras to process")
         
-        for i, (camera_id, video_path) in enumerate(cameras):
-            logger.info(f"=== Processing Camera {i+1}/{len(cameras)}: {camera_id} ===")
-            
-            pipeline = VisionPipeline(
-                store_id=store_id,
-                camera_id=camera_id,
-                video_source=video_path,
-                redis_uri=redis_uri
-            )
-            
-            success = pipeline.run()
-            
-            if success:
-                logger.info(f"Camera {camera_id} completed successfully.")
-            else:
-                logger.error(f"Camera {camera_id} failed.")
-            
-            # Brief pause between cameras to let the ReID service catch up
-            if i < len(cameras) - 1:
+        while True:
+            for i, (camera_id, video_path) in enumerate(cameras):
+                logger.info(f"=== Processing Camera {i+1}/{len(cameras)}: {camera_id} ===")
+                
+                pipeline = VisionPipeline(
+                    store_id=store_id,
+                    camera_id=camera_id,
+                    video_source=video_path,
+                    redis_uri=redis_uri
+                )
+                
+                success = pipeline.run()
+                
+                if success:
+                    logger.info(f"Camera {camera_id} completed successfully.")
+                else:
+                    logger.error(f"Camera {camera_id} failed.")
+                
+                # Brief pause between cameras to let the ReID service catch up
                 logger.info("Pausing 5 seconds before next camera...")
                 time.sleep(5)
-        
-        logger.info("=== All cameras processed. Edge node shutting down. ===")
+            
+            logger.info("=== Finished one full cycle. Restarting camera loop. ===")
     else:
         # Single camera mode (backward compatible)
         camera_id = os.getenv("CAMERA_ID", "cam-1")

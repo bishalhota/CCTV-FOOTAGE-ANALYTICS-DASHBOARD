@@ -22,3 +22,19 @@ paths:
   cam5:
     runOnInit: ffmpeg -re -stream_loop -1 -i "/videos/CAM 5.mp4" -c:v libx264 -preset superfast -tune zerolatency -bf 0 -g 30 -an -f rtsp rtsp://localhost:$RTSP_PORT/$RTSP_PATH
     runOnInitRestart: yes
+
+  store2-cam1:
+    runOnInit: ffmpeg -re -stream_loop -1 -i "/videos/Store 2/entry 1.mp4" -c:v libx264 -preset superfast -tune zerolatency -bf 0 -g 30 -an -f rtsp rtsp://localhost:$RTSP_PORT/$RTSP_PATH
+    runOnInitRestart: yes
+
+  store2-cam2:
+    runOnInit: ffmpeg -re -stream_loop -1 -i "/videos/Store 2/entry 2.mp4" -c:v libx264 -preset superfast -tune zerolatency -bf 0 -g 30 -an -f rtsp rtsp://localhost:$RTSP_PORT/$RTSP_PATH
+    runOnInitRestart: yes
+
+  store2-cam3:
+    runOnInit: ffmpeg -re -stream_loop -1 -i "/videos/Store 2/zone.mp4" -c:v libx264 -preset superfast -tune zerolatency -bf 0 -g 30 -an -f rtsp rtsp://localhost:$RTSP_PORT/$RTSP_PATH
+    runOnInitRestart: yes
+
+  store2-cam4:
+    runOnInit: ffmpeg -re -stream_loop -1 -i "/videos/Store 2/billing_area.mp4" -c:v libx264 -preset superfast -tune zerolatency -bf 0 -g 30 -an -f rtsp rtsp://localhost:$RTSP_PORT/$RTSP_PATH
+    runOnInitRestart: yes

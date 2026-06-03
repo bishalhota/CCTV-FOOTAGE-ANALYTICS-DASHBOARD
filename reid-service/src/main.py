@@ -85,7 +85,8 @@ async def main():
                             "frame_height": int(msg["frame_height"]) if "frame_height" in msg else 1080,
                             "embedding": json.loads(msg["embedding"]) if msg.get("embedding") else None,
                             "quality_score": float(msg["quality_score"]),
-                            "timestamp": float(msg["timestamp"])
+                            "timestamp": float(msg["timestamp"]),
+                            "video_timestamp": float(msg.get("video_timestamp", 0.0))
                         }
                         
                         async with async_session() as session:
@@ -101,7 +102,8 @@ async def main():
                                     "bbox": json.dumps(telemetry["bbox"]),
                                     "frame_width": str(telemetry["frame_width"]),
                                     "frame_height": str(telemetry["frame_height"]),
-                                    "timestamp": str(telemetry["timestamp"])
+                                    "timestamp": str(telemetry["timestamp"]),
+                                    "video_timestamp": str(telemetry["video_timestamp"])
                                 }
                                 await r.xadd(output_stream, resolved_payload)
                                 
@@ -112,6 +114,22 @@ async def main():
                                     logger.error(f"Failed to publish to live_telemetry pub/sub: {e}")
                                 
                                 logger.debug(f"Resolved track {telemetry['track_id']} -> visitor {visitor_id}")
+                            else:
+                                # Send unresolved tracking data to UI so we still see boxes
+                                ui_payload = {
+                                    "store_id": telemetry["store_id"],
+                                    "camera_id": telemetry["camera_id"],
+                                    "visitor_id": str(telemetry["track_id"]),
+                                    "bbox": json.dumps(telemetry["bbox"]),
+                                    "frame_width": str(telemetry["frame_width"]),
+                                    "frame_height": str(telemetry["frame_height"]),
+                                    "timestamp": str(telemetry["timestamp"]),
+                                    "video_timestamp": str(telemetry["video_timestamp"])
+                                }
+                                try:
+                                    await r.publish("live_telemetry", json.dumps(ui_payload))
+                                except Exception as e:
+                                    pass
                                 
                     except Exception as e:
                         logger.error(f"Error processing message {msg_id}: {e}")

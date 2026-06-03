@@ -16,7 +16,8 @@ const LiveFeedsPage: React.FC<LiveFeedsPageProps> = ({ store }) => {
   const { events, cameraStatuses, liveDetections } = useEventStream(store.id);
   const { cameras, completedCameras, processingCamera } = useCameraTracking(
     store.cameras,
-    cameraStatuses
+    cameraStatuses,
+    store.id
   );
 
   return (

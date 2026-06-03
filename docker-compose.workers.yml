@@ -64,3 +64,24 @@ services:
         limits:
           cpus: '2'
           memory: 4G
+
+  edge-node-2:
+    build:
+      context: ./edge-node
+      dockerfile: Dockerfile
+    container_name: si_edge_node_2
+    restart: "no"
+    env_file:
+      - .env.hybrid
+    environment:
+      # Override the STORE_ID and CAMERA_LIST from .env.hybrid for this specific node
+      STORE_ID: "a1b2c3d4-0002-4000-8000-000000000002"
+      CAMERA_LIST: "cam-1:/videos/Store 2/entry 1.mp4,cam-2:/videos/Store 2/entry 2.mp4,cam-3:/videos/Store 2/zone.mp4,cam-4:/videos/Store 2/billing_area.mp4"
+    volumes:
+      # Mount your local CCTV footage directory
+      - ${VIDEO_SOURCE_DIR:-./CCTV sources}:/videos:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G

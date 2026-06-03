@@ -136,18 +136,47 @@ STORES = [
     },
     {
         "id": uuid.UUID("a1b2c3d4-0002-4000-8000-000000000002"),
-        "name": "Tokyo Shibuya",
-        "timezone": "Asia/Tokyo",
+        "name": "Store 2",
+        "timezone": "America/New_York",
         "cameras": [
-            {"name": "Entrance Main", "rtsp_url": "rtsp://10.0.1.10:554/stream1"},
-            {"name": "Floor 1 Overview", "rtsp_url": "rtsp://10.0.1.11:554/stream1"},
-            {"name": "Checkout Cam", "rtsp_url": "rtsp://10.0.1.12:554/stream1"},
+            {"name": "Entry 1", "rtsp_url": "rtsp://localhost:$RTSP_PORT/store2-cam1"},
+            {"name": "Entry 2", "rtsp_url": "rtsp://localhost:$RTSP_PORT/store2-cam2"},
+            {"name": "Zone Area", "rtsp_url": "rtsp://localhost:$RTSP_PORT/store2-cam3"},
+            {"name": "Billing Area", "rtsp_url": "rtsp://localhost:$RTSP_PORT/store2-cam4"},
         ],
         "zones": [
-            {"name": "Entrance Gate", "zone_type": "ENTRY_LINE", "polygon": [{"x": 0, "y": 0}, {"x": 150, "y": 0}, {"x": 150, "y": 40}, {"x": 0, "y": 40}]},
-            {"name": "Tech Showcase", "zone_type": "DISPLAY", "polygon": [{"x": 30, "y": 80}, {"x": 200, "y": 80}, {"x": 200, "y": 250}, {"x": 30, "y": 250}]},
-            {"name": "Accessories Wall", "zone_type": "AISLE", "polygon": [{"x": 250, "y": 80}, {"x": 400, "y": 80}, {"x": 400, "y": 250}, {"x": 250, "y": 250}]},
-            {"name": "Billing Counter", "zone_type": "QUEUE", "polygon": [{"x": 250, "y": 300}, {"x": 400, "y": 300}, {"x": 400, "y": 450}, {"x": 250, "y": 450}]},
+            {
+                "name": "Entrance Gate 1", 
+                "zone_type": "ENTRY_LINE", 
+                "polygon": {
+                    "camera_ids": ["cam-1"],
+                    "points": [{"x": 0.0, "y": 0.5}, {"x": 1.0, "y": 0.5}, {"x": 1.0, "y": 1.0}, {"x": 0.0, "y": 1.0}]
+                }
+            },
+            {
+                "name": "Entrance Gate 2", 
+                "zone_type": "ENTRY_LINE", 
+                "polygon": {
+                    "camera_ids": ["cam-2"],
+                    "points": [{"x": 0.0, "y": 0.5}, {"x": 1.0, "y": 0.5}, {"x": 1.0, "y": 1.0}, {"x": 0.0, "y": 1.0}]
+                }
+            },
+            {
+                "name": "Browsing Zone", 
+                "zone_type": "DISPLAY", 
+                "polygon": {
+                    "camera_ids": ["cam-3"],
+                    "points": [{"x": 0.1, "y": 0.1}, {"x": 0.9, "y": 0.1}, {"x": 0.9, "y": 0.9}, {"x": 0.1, "y": 0.9}]
+                }
+            },
+            {
+                "name": "Billing Counter", 
+                "zone_type": "QUEUE", 
+                "polygon": {
+                    "camera_ids": ["cam-4"],
+                    "points": [{"x": 0.2, "y": 0.4}, {"x": 0.8, "y": 0.4}, {"x": 0.8, "y": 1.0}, {"x": 0.2, "y": 1.0}]
+                }
+            },
         ],
     },
     {
